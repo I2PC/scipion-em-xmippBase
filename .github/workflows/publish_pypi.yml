@@ -3,7 +3,6 @@
 
 name: master to pypi with comments and tag
 
-
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
@@ -19,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@main
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@main
       with:
         python-version: '3.8'
     - name: Install dependencies
