@@ -34,6 +34,5 @@ __version__ = _currentBinVersion[2:] + ".0"  # Set this to ".0" on each xmipp bi
         # For not release version (hotfix) increase it --> ".1", ".2", ...
 
 class Plugin(xmipp3.Plugin):
-    @classmethod
-    @classmethod
+        pass
 
