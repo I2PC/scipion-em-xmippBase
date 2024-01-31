@@ -40,7 +40,7 @@ from xmippBase import __version__
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 with open('requirements.txt') as f:
@@ -55,7 +55,7 @@ setup(
     description='Scipion pseudoplugin to deal with the shared xmipp protocols.',  # Required
 
     long_description=long_description,  # Optional
-    url='https://github.com/i2pc/scipion-em-xmippBase',  # Optional
+    url='https://github.com/I2PC/scipion-em-xmippBase',  # Optional
     author='I2PC',  # Optional
     author_email='scipion@cnb.csic.es',  # Optional
     keywords='scipion cryoem imageprocessing Xmipp scipion-3.0',  # Optional
