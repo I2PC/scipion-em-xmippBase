@@ -22,7 +22,7 @@
 # * e-mail address 'scipion@cnb.csic.es'
 # ***************************************************************************/
 
-import xmipp3
+import pwem
 import subprocess, os
 import pyworkflow.utils as pwutils
 
@@ -33,6 +33,6 @@ __version__ = _currentBinVersion[2:] + ".0"  # Set this to ".0" on each xmipp bi
         # sv = Set this to ".0" on each xmipp  release.
         # For not release version (hotfix) increase it --> ".1", ".2", ...
 
-class Plugin(xmipp3.Plugin):
+class Plugin(pwem.Plugin):
         pass
 
