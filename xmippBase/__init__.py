@@ -27,7 +27,7 @@ import subprocess, os
 import pyworkflow.utils as pwutils
 
 _references = ['delaRosaTrevin2013', 'Jimenez2022']
-_currentBinVersion = '3.23.11.0'
+_currentBinVersion = '3.24.06.0'
 __version__ = _currentBinVersion[2:] + ".0"  # Set this to ".0" on each xmipp binary release, otherwise increase it --> ".1", ".2", ...
         # X.Y.M = version of the xmipp release associated.
         # sv = Set this to ".0" on each xmipp  release.
