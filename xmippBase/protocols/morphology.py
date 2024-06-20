@@ -25,18 +25,14 @@
 # *
 # **************************************************************************
 from pyworkflow.protocol.params import (IntParam, StringParam, BooleanParam, FloatParam, EnumParam)
+from pwem.protocols import EMProtocol
 
-MORPHOLOGY_DILATION = 0
-MORPHOLOGY_EROSION = 1
-MORPHOLOGY_CLOSING = 2
-MORPHOLOGY_OPENING = 3
+MORPHOLOGY_DILATION=0
+MORPHOLOGY_EROSION=1
+MORPHOLOGY_CLOSING=2
+MORPHOLOGY_OPENING=3
 
-
-class Morphology:
-
-    def __init__(self, prot):
-        self.prot = prot
-
+class Morphology(EMProtocol):
     def addPostprocessingSection(self, form):
         form.addSection(label='Postprocessing')
         form.addParam('doSmall', BooleanParam, default=False,
@@ -44,7 +40,7 @@ class Morphology:
                       help="To remove small clusters of points. "
                            "The input mask has to be binary.")
         form.addParam('smallSize', IntParam, default=50,
-                      label='Minimum size', condition="doSmall",
+                      label='Minimum size',condition="doSmall",
                       help='Connected components whose size is smaller than '
                            'this number in voxels will be removed')
         form.addParam('doBig', BooleanParam, default=False,
@@ -53,7 +49,7 @@ class Morphology:
         form.addParam('doSymmetrize', BooleanParam, default=False,
                       label='Symmetrize mask')
         form.addParam('symmetry', StringParam, default='c1',
-                      label='Symmetry group', condition="doSymmetrize",
+                      label='Symmetry group',condition="doSymmetrize",
                       help="To obtain a symmetric mask. See http://xmipp.cnb.csic.es/twiki/bin/view/Xmipp/Symmetry \n"
                            "for a description of the symmetry groups format. \n"
                            "If no symmetry is present, give c1")
@@ -80,24 +76,24 @@ class Morphology:
                       help="The larger this value, the more the effect will be noticed")
 
     def removeSmallObjects(self, fn, objectSize):
-        self.prot.runJob("xmipp_transform_morphology", "-i %s --binaryOperation removeSmall %d" % (fn, objectSize))
+        self.runJob("xmipp_transform_morphology","-i %s --binaryOperation removeSmall %d" % (fn, objectSize))
 
     def keepBiggest(self, fn):
-        self.prot.runJob("xmipp_transform_morphology", "-i %s --binaryOperation keepBiggest" % fn)
+        self.runJob("xmipp_transform_morphology","-i %s --binaryOperation keepBiggest" % fn)
 
     def doSymmetrize(self, fn, typeOfSymmetry):
-        if typeOfSymmetry != 'c1':
-            self.prot.runJob("xmipp_transform_symmetrize", "-i %s --sym %s --dont_wrap" % (fn, typeOfSymmetry))
-            self.prot.runJob("xmipp_transform_threshold", "-i %s --select below 0.5 --substitute binarize" % fn)
+        if typeOfSymmetry!='c1':
+            self.runJob("xmipp_transform_symmetrize","-i %s --sym %s --dont_wrap" % (fn, typeOfSymmetry))
+            self.runJob("xmipp_transform_threshold", "-i %s --select below 0.5 --substitute binarize" % fn)
 
     def doMorphological(self, fn, elementSize, typeOfMorphOp):
-        self.prot.runJob("xmipp_transform_morphology", "-i %s --binaryOperation %s --size %d"
-                    % (fn, typeOfMorphOp, elementSize))
+            self.runJob("xmipp_transform_morphology","-i %s --binaryOperation %s --size %d"
+                        % (fn, typeOfMorphOp, elementSize))
 
     def doInvert(self, fn):
-        self.prot.runJob("xmipp_image_operate", "-i %s --mult -1" % fn)
-        self.prot.runJob("xmipp_image_operate", "-i %s --plus  1" % fn)
+        self.runJob("xmipp_image_operate","-i %s --mult -1" % fn)
+        self.runJob("xmipp_image_operate","-i %s --plus  1" % fn)
 
     def doSmooth(self, fn, sigmaConv):
-        self.prot.runJob("xmipp_transform_filter", "-i %s --fourier real_gaussian %f" % (fn, sigmaConv))
-        self.prot.runJob("xmipp_transform_threshold", "-i %s --select below 0 --substitute value 0" % fn)
+        self.runJob("xmipp_transform_filter","-i %s --fourier real_gaussian %f" % (fn, sigmaConv))
+        self.runJob("xmipp_transform_threshold", "-i %s --select below 0 --substitute value 0" % fn)
