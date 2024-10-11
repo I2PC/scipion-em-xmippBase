@@ -26,13 +26,13 @@
 # **************************************************************************
 from pyworkflow.protocol.params import (IntParam, StringParam, BooleanParam, FloatParam, EnumParam)
 
-MORPHOLOGY_DILATION = 0
-MORPHOLOGY_EROSION = 1
-MORPHOLOGY_CLOSING = 2
-MORPHOLOGY_OPENING = 3
-
-
 class Morphology:
+    MORPHOLOGY_DILATION = 0
+    MORPHOLOGY_EROSION = 1
+    MORPHOLOGY_CLOSING = 2
+    MORPHOLOGY_OPENING = 3
+    MORPHOLOGY_INSIDE = 4
+    MORPHOLOGY_AROUND = 5
 
     def __init__(self, prot):
         self.prot = prot
@@ -63,13 +63,19 @@ class Morphology:
                            "Erosion (erode white region). \n"
                            "Closing (Dilation+Erosion, removes black spots). \n"
                            "Opening (Erosion+Dilation, removes white spots). \n")
-        form.addParam('morphologicalOperation', EnumParam, default=MORPHOLOGY_DILATION,
+        form.addParam('morphologicalOperation', EnumParam, default=self.MORPHOLOGY_DILATION,
                       condition="doMorphological",
-                      choices=['dilation', 'erosion', 'closing', 'opening'],
+                      choices=['dilation', 'erosion', 
+                               'closing', 'opening', 
+                               'closing-input (keep enclosed black areas)', 
+                               'dilation-closing (keep surroundings)'],
                       label='Operation')
         form.addParam('elementSize', IntParam, default=1, condition="doMorphological",
                       label='Structural element size',
                       help="The larger this value, the more the effect will be noticed")
+        form.addParam('fillSize', IntParam, default=1, condition="morphologicalOperation==MORHOLOGY_AROUND",
+                      label='Fill radius',
+                      help="The radius of the void area to be considered as inside")
         form.addParam('doInvert', BooleanParam, default=False,
                       label='Invert the mask')
         form.addParam('doSmooth', BooleanParam, default=False,
@@ -90,9 +96,13 @@ class Morphology:
             self.prot.runJob("xmipp_transform_symmetrize", "-i %s --sym %s --dont_wrap" % (fn, typeOfSymmetry))
             self.prot.runJob("xmipp_transform_threshold", "-i %s --select below 0.5 --substitute binarize" % fn)
 
-    def doMorphological(self, fn, elementSize, typeOfMorphOp):
-        self.prot.runJob("xmipp_transform_morphology", "-i %s --binaryOperation %s --size %d"
-                    % (fn, typeOfMorphOp, elementSize))
+    def doMorphological(self, fn, elementSize, typeOfMorphOp, morphOpArg=None):
+        if morphOpArg is not None:
+            self.prot.runJob("xmipp_transform_morphology", "-i %s --binaryOperation %s %d --size %d"
+                        % (fn, typeOfMorphOp, morphOpArg, elementSize))
+        else:
+            self.prot.runJob("xmipp_transform_morphology", "-i %s --binaryOperation %s --size %d"
+                        % (fn, typeOfMorphOp, elementSize))
 
     def doInvert(self, fn):
         self.prot.runJob("xmipp_image_operate", "-i %s --mult -1" % fn)
